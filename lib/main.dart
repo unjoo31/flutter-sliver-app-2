@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -15,74 +15,99 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final ScrollController _controller = ScrollController();
+
+  double prev = 0;
+  double next = 0;
+  double height = 300;
+  double op = 1.0;
+
+  @override
+  void initState() {
+    _controller.addListener(() {
+      scrollListener();
+    });
+    super.initState();
+  }
+
+  void scrollListener() {
+    print("스크롤 동작중");
+    double currentOffset = _controller.offset; // offset : 바의 위치
+    print("currentOffset : ${currentOffset}");
+
+    // 실습
+    if (currentOffset < 300) {
+      setState(() {
+        height = height - (currentOffset - prev);
+        op = (300 - currentOffset) / 300;
+        if (height < 56) {
+          height = 56;
+        }
+        print("height ${height}");
+      });
+    }
+
+    // 301 300
+    if (currentOffset > prev) {
+      // 아래방향
+      print("아래로 내려가요");
+    }
+
+    // 300 301
+    if (currentOffset < prev) {
+      // 위방향
+      print("위로 올라가요");
+    }
+
+    if (currentOffset == _controller.position.maxScrollExtent) {
+      print("가방 하단");
+      setState(() {
+        height = 0;
+      });
+    }
+
+    // currentOffset == 0
+    if (currentOffset == _controller.position.minScrollExtent) {
+      print("가방 위");
+    }
+
+    prev = currentOffset;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            title: Text("SliverAppbar"),
-            expandedHeight: 200,
-            flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.pin,
-              background: Image.network(
-                "https://picsum.photos/200/300",
-                fit: BoxFit.cover,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              color: Color.fromRGBO(255, 0, 0, op),
+              height: height,
+              width: double.infinity,
+              child: Center(
+                child: Text(
+                  "Good",
+                  style: TextStyle(color: Colors.white, fontSize: 50),
+                ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              height: 500,
-              color: Colors.red,
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 150,
+            Expanded(
               child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 20,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    width: 100,
-                    color: Colors.green,
-                    alignment: Alignment.center,
-                    child: Text("Horizontal Item ${index}"),
-                  );
-                },
+                controller: _controller,
+                itemCount: 50,
+                itemBuilder: (context, index) => Text("제목 $index"),
               ),
             ),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              childCount: 5,
-              (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Container(
-                      height: 100, color: Colors.blue, child: Text("$index")),
-                );
-              },
-            ),
-          ),
-          SliverFillViewport(
-            delegate: SliverChildBuilderDelegate(
-              childCount: 5,
-              (context, index) {
-                return Card(
-                  child: Container(
-                    child: Text("Fill ViewPort Item ${index}"),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
