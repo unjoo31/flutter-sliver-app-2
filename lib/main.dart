@@ -43,7 +43,9 @@ class _SliversScreenState extends State<HomePage> {
           // Sliver 1
           // basic
           SliverFillRemaining(
-            child: Center(child: Text("SliberAppBody")),
+            child: Center(
+                child: Text("SliverFillRemaining",
+                    style: TextStyle(fontSize: 20))),
           ),
 
           SliverPersistentHeader(
@@ -65,6 +67,7 @@ class _SliversScreenState extends State<HomePage> {
           ),
           // Sliver 2
           // Grid view
+
           SliverGrid(
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 200.0, // Grid view 너비
@@ -83,12 +86,29 @@ class _SliversScreenState extends State<HomePage> {
                   ),
                 );
               },
-              childCount: 10,
+              childCount: 4,
+            ),
+          ),
+
+          SliverFillViewport(
+            delegate: SliverChildBuilderDelegate(
+              childCount: 2,
+              (context, index) {
+                return Card(
+                  child: Container(
+                    child: Text(
+                      "Fill ViewPort Item ${index}",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
           SliverList(
             delegate: SliverChildListDelegate([
+              Text("SliverList", style: TextStyle(fontSize: 20)),
               Container(
                 child: Image(
                     image: NetworkImage('https://picsum.photos/id/1/200/300'),
@@ -128,7 +148,7 @@ class _SliversScreenState extends State<HomePage> {
           // Sliver 3
           // List view
           SliverFixedExtentList(
-            itemExtent: 100.0,
+            itemExtent: 50.0,
             // 화면에 표시될 위젯을 설정
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
