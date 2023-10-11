@@ -87,6 +87,44 @@ class _SliversScreenState extends State<HomePage> {
             ),
           ),
 
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Container(
+                child: Image(
+                    image: NetworkImage('https://picsum.photos/id/1/200/300'),
+                    fit: BoxFit.cover),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                child: Image(
+                    image: NetworkImage('https://picsum.photos/id/2/200/300'),
+                    fit: BoxFit.cover),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                child: Image(
+                    image: NetworkImage('https://picsum.photos/id/3/200/300'),
+                    fit: BoxFit.cover),
+              ),
+            ]),
+          ),
+
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+            childCount: 10,
+            (context, index) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5.0),
+              child: Image.network(
+                "https://picsum.photos/id/${index}/200/300",
+                fit: BoxFit.contain,
+              ),
+            ),
+          )),
+
           // Sliver 3
           // List view
           SliverFixedExtentList(
