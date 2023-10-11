@@ -5,8 +5,6 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,99 +14,128 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  _SliversScreenState createState() => _SliversScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final ScrollController _controller = ScrollController();
-
-  double prev = 0;
-  double next = 0;
-  double height = 300;
-  double op = 1.0;
-
-  @override
-  void initState() {
-    _controller.addListener(() {
-      scrollListener();
-    });
-    super.initState();
-  }
-
-  void scrollListener() {
-    print("스크롤 동작중");
-    double currentOffset = _controller.offset; // offset : 바의 위치
-    print("currentOffset : ${currentOffset}");
-
-    // 실습
-    if (currentOffset < 300) {
-      setState(() {
-        height = height - (currentOffset - prev);
-        op = (300 - currentOffset) / 300;
-        if (height < 56) {
-          height = 56;
-        }
-        print("height ${height}");
-      });
-    }
-
-    // 301 300
-    if (currentOffset > prev) {
-      // 아래방향
-      print("아래로 내려가요");
-    }
-
-    // 300 301
-    if (currentOffset < prev) {
-      // 위방향
-      print("위로 올라가요");
-    }
-
-    if (currentOffset == _controller.position.maxScrollExtent) {
-      print("가방 하단");
-      setState(() {
-        height = 0;
-      });
-    }
-
-    // currentOffset == 0
-    if (currentOffset == _controller.position.minScrollExtent) {
-      print("가방 위");
-    }
-
-    prev = currentOffset;
-  }
-
-  @override
+class _SliversScreenState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              color: Color.fromRGBO(255, 0, 0, op),
-              height: height,
-              width: double.infinity,
-              child: Center(
-                child: Text(
-                  "Good",
-                  style: TextStyle(color: Colors.white, fontSize: 50),
+      // ScrollView의 종류로 Sliver와 같이 사용된다.
+      body: CustomScrollView(
+        slivers: <Widget>[
+          // appBar
+          SliverAppBar(
+            expandedHeight: 250.0, // appBar 높이
+            pinned: true,
+            floating: false,
+            snap: false,
+            // Sliver appBar를 설정
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text('SliverAppBar'),
+              centerTitle: true,
+              background: FlutterLogo(),
+            ),
+          ),
+
+          // Sliver 1
+          // basic
+          SliverFillRemaining(
+            child: Center(child: Text("SliberAppBody")),
+          ),
+
+          SliverPersistentHeader(
+            pinned: true,
+            floating: false,
+            delegate: MySliverPersistentHeaderDelegate(
+              minHeight: 50.0,
+              maxHeight: 120.0,
+              child: Container(
+                color: Colors.blue[300],
+                child: const Center(
+                  child: Text(
+                    'SliverPersistentHeader',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
                 ),
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                controller: _controller,
-                itemCount: 50,
-                itemBuilder: (context, index) => Text("제목 $index"),
-              ),
+          ),
+          // Sliver 2
+          // Grid view
+          SliverGrid(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200.0, // Grid view 너비
+              mainAxisSpacing: 10.0, // 행 간 거리
+              crossAxisSpacing: 10.0, // 열 간 거리
             ),
-          ],
-        ),
+            // 화면에 표시될 위젯을 설정
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return Container(
+                  alignment: Alignment.center,
+                  color: Colors.green,
+                  child: Text(
+                    'Grid Item $index',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                );
+              },
+              childCount: 10,
+            ),
+          ),
+
+          // Sliver 3
+          // List view
+          SliverFixedExtentList(
+            itemExtent: 100.0,
+            // 화면에 표시될 위젯을 설정
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return ListTile(
+                  title: Text(
+                    'List Item $index',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class MySliverPersistentHeaderDelegate extends SliverPersistentHeaderDelegate {
+  MySliverPersistentHeaderDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  bool shouldRebuild(covariant MySliverPersistentHeaderDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }
