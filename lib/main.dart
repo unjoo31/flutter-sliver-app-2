@@ -34,7 +34,7 @@ class _SliversScreenState extends State<HomePage> {
             snap: false,
             // Sliver appBar를 설정
             flexibleSpace: FlexibleSpaceBar(
-              title: Text('SliverAppBar'),
+              title: Text('SliverAppBar - FlexibleSpaceBar'),
               centerTitle: true,
               background: FlutterLogo(),
             ),
@@ -90,6 +90,14 @@ class _SliversScreenState extends State<HomePage> {
             ),
           ),
 
+          SliverToBoxAdapter(
+            child: Container(
+              height: 200,
+              color: Colors.red,
+              child: Text("SliverToBoxAdapter", style: TextStyle(fontSize: 20)),
+            ),
+          ),
+
           SliverFillViewport(
             delegate: SliverChildBuilderDelegate(
               childCount: 2,
@@ -97,7 +105,7 @@ class _SliversScreenState extends State<HomePage> {
                 return Card(
                   child: Container(
                     child: Text(
-                      "Fill ViewPort Item ${index}",
+                      "Fill ViewPort Item ${index} - SliverChildBuilderDelegate",
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
@@ -108,8 +116,10 @@ class _SliversScreenState extends State<HomePage> {
 
           SliverList(
             delegate: SliverChildListDelegate([
-              Text("SliverList", style: TextStyle(fontSize: 20)),
+              Text("SliverList - SliverChildListDelegate",
+                  style: TextStyle(fontSize: 20)),
               Container(
+                height: 100,
                 child: Image(
                     image: NetworkImage('https://picsum.photos/id/1/200/300'),
                     fit: BoxFit.cover),
@@ -118,6 +128,7 @@ class _SliversScreenState extends State<HomePage> {
                 height: 10,
               ),
               Container(
+                height: 100,
                 child: Image(
                     image: NetworkImage('https://picsum.photos/id/2/200/300'),
                     fit: BoxFit.cover),
@@ -126,6 +137,7 @@ class _SliversScreenState extends State<HomePage> {
                 height: 10,
               ),
               Container(
+                height: 100,
                 child: Image(
                     image: NetworkImage('https://picsum.photos/id/3/200/300'),
                     fit: BoxFit.cover),
